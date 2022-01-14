@@ -321,28 +321,33 @@ class UserSolution2
         int remain;
         mNumber = this.mNummber;
         this.mNummber++;
-        if(!this.maesu.isEmpty()){
-            Order oMaesu = this.maesu.peek();
-            if(oMaesu.mStock == mStock && oMaesu.mPrice >= mPrice ){
-                remain = oMaesu.mQuantity - mQuantity;
-                this.maesu.remove(); // 미체결 매수 주문에서 제거
-                if( remain < 0 ) {
-                    this.maedo.offer(new Order(mNumber, mStock, Math.abs(remain),mPrice, 0 ));
-                } else {
-                    oMaesu.mQuantity = remain;
-                    this.maesu.offer(oMaesu);
-                }
-            }
-            oMaesu.time = this.time;
-            this.contract.offer(oMaesu);
-            this.time++;
-            if(!this.maedo.contains(mNumber)) return this.maedo.peek().mQuantity;
-            else return 0;
-        }
-        else { // 미체결 매도 주문이 없는 경우
+        if(this.maesu.isEmpty()) { // 미체결 매도 주문이 없는 경우
             this.maedo.offer(new Order(mNumber, mStock, mQuantity, mPrice, 0));
-            return this.maedo.peek().mQuantity;
         }
+        while(!this.maesu.isEmpty()) { // 매도 주문이 있으면
+            Order oMaedo = this.maesu.poll(); // 가장 비싼 거
+            if(oMaedo.mStock == mStock && oMaedo.mPrice <= mPrice){
+                remain = oMaedo.mQuantity - mQuantity;
+                if( remain > 0 ) { // 남은 거 다시 저장
+                    oMaedo.mQuantity = mQuantity; // 주문 들어온 수량 = 팔린 거
+                    oMaedo.time = this.time; // 시간 기록
+                    this.contract.offer(oMaedo); // 체결에 저장
+                    this.time++; // 시간 ++
+                    this.maesu.offer(new Order(mNumber, mStock, remain ,mPrice, 0 )); //남은 거 다시 매도에 저장
+                }
+                if( remain == 0) {
+                    oMaedo.time = this.time; // 시간 기록
+                    this.contract.offer(oMaedo); // 체결에 저장
+                    this.time++; // 시간 ++
+                    break; // 주문 들어온 거 다 팔렸다
+                }
+            } else {
+                this.maedo.offer(new Order(mNumber, mStock, mQuantity, mPrice, 0));
+                break;
+            }
+        }
+        if(this.maedo.contains(mNumber)) return ((Order)this.maedo.get(mNumber)).mQuantity;
+        else return 0;
     }
 
     public void cancel(int mNumber)
