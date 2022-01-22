@@ -16,7 +16,7 @@ public class ex_02 {
                 range = range + (6 * cnt); // 2, 8, 20, 38, ...
                 cnt++;
             }
+            System.out.println(cnt);
         }
-        System.out.println(cnt);
     }
 }
