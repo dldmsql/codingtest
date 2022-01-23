@@ -6,8 +6,24 @@ public class ex_03 {
     public static void main(String[] args){
         Scanner sc = new Scanner(System.in);
         int n = sc.nextInt();
-        // 대각선의 개수 1, 2, 3, 4, ...
-        if( n == 1) System.out.println("1/1");
-        else {}
+        int a =1;
+        int b =1;
+        int range = 1;
+        int cnt = 1;
+        if (n != 1) {
+            while (n >= range) {
+                range = range + cnt;
+                cnt++;
+            }
+                a = cnt- (range-n) ;
+                b = cnt-a;
+        }
+        int temp;
+        if( cnt%2 == 0 ) {
+            temp = a;
+            a = b;
+            b = temp;
+        }
+        System.out.println(a + "/" + b);
     }
 }
